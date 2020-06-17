@@ -1,6 +1,6 @@
 class Ghost {
 
-    constructor(ctx, w, h, y, x, name, arrayWall, tileW, tileH, direction) {
+    constructor(ctx, w, h, y, x, name, arrayGhost, tileW, tileH) {
 
         this.ctx = ctx
 
@@ -20,16 +20,16 @@ class Ghost {
         this.image.frames = 4
         this.image.framesIndex = 0
 
-        this.arrayWall = arrayWall
-
+       
         this.tile = {
             w: tileW,
             h: tileH
         }
 
-        this.direction = direction
+        this.index = 0
 
-        this.vel = 2
+        this.vel = 0.3
+        this.arrayGhost = arrayGhost
 
     }
 
@@ -46,8 +46,8 @@ class Ghost {
             posY,
             this.ghostSize.w / frame,
             this.ghostSize.h,
-            this.ghostPosition.x * this.tile.w,
-            this.ghostPosition.y * this.tile.h,
+            this.arrayGhost[this.index].x * this.tile.w,
+            this.arrayGhost[this.index].y * this.tile.h,
             this.tile.w,
             this.tile.h,
 
@@ -67,53 +67,14 @@ class Ghost {
         }
     }
 
-    move(arrayWall) {
-
-        const nextMovement = {
-            ...this.ghostPosition
-        }
-        switch (this.direction) {
-            case "up":
-                nextMovement.y--
-                break;
-            case "down":
-                nextMovement.y++
-                break;
-            case "left":
-                nextMovement.x--
-                break;
-            case "right":
-                nextMovement.x++
-                break;
-        }
-        if (arrayWall.filter(elm =>
-                elm.x === nextMovement.x && elm.y === nextMovement.y
-            ).length > 0) {} else {
-            this.ghostPosition = nextMovement
-            this.moveTunel()
-        }
-    }
-
-    moveTunel() {
-        const nextMovementTunel = {
-            ...this.ghostPosition
-        }
-
-        if (nextMovementTunel.x++ === 18 && nextMovementTunel.y === 6) { //tunel derecha
-            nextMovementTunel.x = 0
-            nextMovementTunel.y = 6
-            this.ghostPosition = nextMovementTunel
-        } else if (nextMovementTunel.x-- === 0 && nextMovementTunel.y === 6) { //tunel izquierda
-            nextMovementTunel.x = 18
-            nextMovementTunel.y = 6
-            this.ghostPosition = nextMovementTunel
-        }
+    moveGhost() {
+       
+        this.index ++
 
     }
 
-    createGhost1() {
-
+    addMovementToPath(newMov) {
+        this.arrayGhost.push(newMov)
     }
-
 
 }

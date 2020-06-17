@@ -1,6 +1,6 @@
 class Character {
 
-    constructor(ctx, imageW, imageH, posX, posY, name, keys, arrayWall, tileW, tileH, direction) {
+    constructor(ctx, imageW, imageH, posX, posY, name, keys, arrayWall, tileW, tileH, direction, onNewMovement) {
         this.ctx = ctx
 
         this.characterSize = {
@@ -33,6 +33,7 @@ class Character {
 
         this.setListener()
 
+        this.onNewMovement = onNewMovement
     }
 
 
@@ -138,10 +139,11 @@ class Character {
                 break;
         }
         if (arrayWall.filter(elm =>
-            elm.x === nextMovement.x && elm.y === nextMovement.y
-        ).length > 0) { } else {
+                elm.x === nextMovement.x && elm.y === nextMovement.y
+            ).length > 0) {} else {
             this.characterPos = nextMovement
             this.moveTunel()
+            this.onNewMovement(nextMovement)
         }
     }
 
@@ -163,11 +165,16 @@ class Character {
     }
 
     eatApple(arrayApple, onAppleEaten) {
+        let counter_apple = 0
         const apples = arrayApple.filter(elm =>
             elm.x === this.characterPos.x && elm.y === this.characterPos.y);
+        
         if (apples.length > 0) {
             onAppleEaten(apples[0])
+            
+            
         }
+
     }
 
     eatIron(arrayIron, onIronEaten) {
@@ -175,7 +182,9 @@ class Character {
             elm.x === this.characterPos.x && elm.y === this.characterPos.y)
         if (ironhack.length > 0) {
             onIronEaten(ironhack[0])
+             
         }
+       
     }
 
     setListener() {

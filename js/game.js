@@ -7,7 +7,7 @@ const german = {
     canvasDom: undefined,
     ctx: undefined,
     canvasSize: {
-        w: window.innerWidth,
+        w: window.innerWidth * 70 / 100,
         h: window.innerHeight
     },
     keys: {
@@ -23,10 +23,13 @@ const german = {
     arrayIron: arrBox.filter(elm => elm.type === 'ironhack'),
     arrayWall: arrBox.filter(elm => elm.type === 'wall' || elm.type === 'wallGhost'),
 
+    apples: arrBox.filter(elm => elm.type === 'apple'),
+    irons: arrBox.filter(elm => elm.type === 'ironhack'),
+
     //MEDIDA PORCENTUAL DE CADA CASILLA
 
     tile: {
-        w: window.innerWidth / 18,
+        w: window.innerWidth * 70 / 100 / 18,
         h: window.innerHeight / 13,
 
     },
@@ -42,23 +45,34 @@ const german = {
     },
 
     direction: undefined,
+    
+    score: 0,
 
     pacman: undefined,
     apple: undefined,
     iron: undefined,
     background: undefined,
 
-    ghost_1: undefined,
+    dayan: undefined,
+    kike: undefined,
+    laura: undefined,
+    escarlata: undefined,
 
 
     framesCounter: 0,
     fps: 60,
+
+    sound_game: undefined,
+
 
 
 
     init(id) {
         this.setDimension(id)
         this.start()
+        this.sound_game = new Audio("mp3/waka.mp3")
+        this.sound_game.play()
+
 
     },
 
@@ -75,6 +89,11 @@ const german = {
 
         this.reset()
 
+         
+
+
+
+
         setInterval(() => {
 
             this.framesCounter > 5000 ? this.framesCounter = 0 : this.framesCounter++
@@ -83,6 +102,10 @@ const german = {
             this.drawPacman()
             this.drawPills()
             this.drawGhost()
+            this.dayan.moveGhost()
+            this.kike.moveGhost()
+            this.laura.moveGhost()
+            this.escarlata.moveGhost()
 
 
         }, 10000 / this.fps)
@@ -93,7 +116,7 @@ const german = {
         this.ctx.clearRect(0, 0, this.canvasSize.w, this.canvasSize.h);
     },
 
-    //PINTAR CASILLAS
+    //PINTAR MUROS
 
     drawWall() {
         this.background = arrBox.forEach(elm => {
@@ -101,108 +124,10 @@ const german = {
         })
     },
 
-    drawPacman() {
-        this.pacman.move(this.arrayWall)
-        this.pacman.draw(this.framesCounter)
-        this.pacman.eatApple(this.arrayApple, appleEaten => {
-            this.arrayApple = [...this.arrayApple].filter(elm => {
-                return elm.x !== appleEaten.x || elm.y !== appleEaten.y
-            })
-
-        })
-        this.pacman.eatIron(this.arrayIron, ironEaten => {
-            this.arrayIron = [...this.arrayIron].filter(elm => {
-                return elm.x !== ironEaten.x || elm.y !== ironEaten.y
-            })
-        })
-    },
+    
 
 
-    //PINTAR MANZANAS Y LOGO IRONHACK EN SU CASILLA
-
-    drawPills() {
-        this.apple = this.arrayApple.forEach(elm => {
-            this.drawImage('apple.png', elm.y * this.tile.h + 20, elm.x * this.tile.w + 20, this.tile.w - 40, this.tile.h - 40)
-
-        })
-
-
-
-
-        this.iron = this.arrayIron.forEach(elm => {
-            this.drawImage('ironhack.png',
-                elm.y * this.tile.h + 5,
-                elm.x * this.tile.w + 5,
-                this.tile.w - 10,
-                this.tile.h - 10)
-        })
-    },
-
-    createGhost() {
-        this.ghost_1 = new Ghost(
-            this.ctx,
-            this.image.w,
-            this.image.h,
-            5,
-            7,
-            "ghost_sprites_rosa.png",
-            this.arrayWall,
-            this.tile.w,
-            this.tile.h,
-            this.direction)
-
-        this.ghost_2 = new Ghost(
-            this.ctx,
-            this.image.w,
-            this.image.h,
-            5,
-            8,
-            "ghost_sprites_azul.png",
-            this.arrayWall,
-            this.tile.w,
-            this.tile.h,
-            this.direction)
-
-        this.ghost_3 = new Ghost(
-            this.ctx,
-            this.image.w,
-            this.image.h,
-            5,
-            9,
-            "ghost_sprites_rojo.png",
-            this.arrayWall,
-            this.tile.w,
-            this.tile.h,
-            this.direction)
-
-        this.ghost_4 = new Ghost(
-            this.ctx,
-            this.image.w,
-            this.image.h,
-            5,
-            10,
-            "ghost_sprites_naranja.png",
-            this.arrayWall,
-            this.tile.w,
-            this.tile.h,
-            this.direction)
-    },
-
-    drawGhost() {
-        this.ghost_1.draw(this.framesCounter)
-        this.ghost_2.draw(this.framesCounter)
-        this.ghost_3.draw(this.framesCounter)
-        this.ghost_4.draw(this.framesCounter)
-    },
-
-    //PINTAR PACMAN EN SU POSICION INICIAL
-
-    reset() {
-        this.createPacman()
-        this.drawWall()
-        this.drawPills()
-        this.createGhost()
-    },
+    //CREAR PACMAN
 
     createPacman() {
         this.pacman = new Character(
@@ -216,19 +141,151 @@ const german = {
             this.arrayWall,
             this.tile.w,
             this.tile.h,
-            this.direction
+            this.direction,
+            newMov => {
+                this.dayan.addMovementToPath(newMov)
+                this.kike.addMovementToPath(newMov)
+                this.laura.addMovementToPath(newMov)
+                this.escarlata.addMovementToPath(newMov)
+
+            }
 
         )
     },
 
+    //LLAMA A PINTAR PACMAN, LLAMAR MOVIMIENTO Y LLAMAR A COMER MANZANAS
+
+    drawPacman() {
+        this.pacman.move(this.arrayWall)
+        this.pacman.draw(this.framesCounter)
+        this.pacman.eatApple(this.arrayApple, appleEaten => {
+            this.arrayApple = [...this.arrayApple].filter(elm => {
+                return elm.x !== appleEaten.x || elm.y !== appleEaten.y
+            })
+            // SUMAR 10 PUNTOS POR CADA MANZANA
+            this.score +=10
+            const score = document.querySelector('#counter').innerText = this.score
+
+        })
+        this.pacman.eatIron(this.arrayIron, ironEaten => {
+            this.arrayIron = [...this.arrayIron].filter(elm => {
+                return elm.x !== ironEaten.x || elm.y !== ironEaten.y
+            })
+            // SUMAR 10 PUNTOS POR CADA IRONHACK
+            this.score += 10
+            const score = document.querySelector('#counter').innerText = this.score
+        })
+    },
 
 
-    //MÉTODO DE APOYO PARA CARGAR IMÁGENES
+    //PINTAR MANZANAS Y LOGO IRONHACK EN SU CASILLA
+
+    drawPills() {
+        this.apple = this.arrayApple.forEach(elm => {
+            this.drawImage('apple.png', elm.y * this.tile.h + 15, elm.x * this.tile.w + 15, this.tile.w - 30, this.tile.h - 30)
+
+        })
+
+        this.iron = this.arrayIron.forEach(elm => {
+            this.drawImage('ironhack.png',
+                elm.y * this.tile.h + 5,
+                elm.x * this.tile.w + 5,
+                this.tile.w - 10,
+                this.tile.h - 10)
+        })
+    },
+
+    // CREAR FANTASthis.arrayWallA CLASE GHOST
+
+    createGhost() {
+        this.arrayWall
+        this.dayan = new Ghost(
+            this.ctx,
+            this.image.w,
+            this.image.h,
+            5,
+            7,
+            "ghost_sprites_rosa.png",
+            arrayDayan,
+            this.tile.w,
+            this.tile.h,
+            this.direction)
+
+        this.kike = new Ghost(
+            this.ctx,
+            this.image.w,
+            this.image.h,
+            5,
+            8,
+            "ghost_sprites_azul.png",
+            arrayKike,
+            this.tile.w,
+            this.tile.h,
+            this.direction)
+
+        this.laura = new Ghost(
+            this.ctx,
+            this.image.w,
+            this.image.h,
+            5,
+            9,
+            "ghost_sprites_rojo.png",
+            arrayLaura,
+            this.tile.w,
+            this.tile.h,
+            this.direction)
+
+        this.escarlata = new Ghost(
+            this.ctx,
+            this.image.w,
+            this.image.h,
+            5,
+            10,
+            "ghost_sprites_naranja.png",
+            arrayEscarlata,
+            this.tile.w,
+            this.tile.h,
+            this.direction)
+    },
+
+    //PINTAR FANTASMAS
+
+    drawGhost() {
+        this.dayan.draw(this.framesCounter)
+        this.kike.draw(this.framesCounter)
+        this.laura.draw(this.framesCounter)
+        this.escarlata.draw(this.framesCounter)
+    },
+
+    //PINTAR TODO EN SU POSICION INICIAL
+
+    reset() {
+        this.createPacman()
+        this.drawWall()
+        this.drawPills()
+        this.createGhost()
+    },
+
+
+    //MÉTODO PARA CARGAR IMÁGENES
 
     drawImage(name, posX, posY, w, h) {
         let image = new Image()
         image.src = `/img/${name}`
         this.ctx.drawImage(image, posY, posX, w, h)
+    },
+
+    sound(src) {
+        console.log("SUENAAA?")
+        this.sound = document.createElement("audio");
+        this.sound.src = src;
+        this.sound.setAttribute("preload", "auto");
+        this.sound.setAttribute("controls", "none");
+        this.sound.style.display = "none";
+        document.body.appendChild(this.sound);
+        this.sound.play();
+
+
     },
 
 

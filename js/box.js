@@ -11,7 +11,7 @@ class Box {
     //MÉTODO AUXILIAR PARA PINTAR LAS CAJITAS REDONDAS
 
     roundedRect(ctx, x, y, width, height, radius) {
-        ctx.strokeStyle = 'purple';
+        ctx.strokeStyle = 'blue';
         ctx.lineWidth = 7;
 
         //https://developer.mozilla.org/es/docs/Web/Guide/HTML/Canvas_tutorial/Dibujando_formas
@@ -26,22 +26,6 @@ class Box {
         ctx.lineTo(x + radius, y);
         ctx.quadraticCurveTo(x, y, x, y + radius);
         ctx.stroke();
-
-
-        // ctx.beginPath();
-        // ctx.moveTo(x, y + radius);
-        // ctx.lineTo(x, y + height - radius);
-        // ctx.arcTo(x, y + height, x + radius, y + height, radius);
-        // ctx.lineTo(x + width - radius, y + height);
-        // ctx.closePath(); //LÍNEA DIAGONAL
-        // ctx.arcTo(x + width, y + height, x + width, y + height - radius, radius);
-        // ctx.lineTo(x + width, y + radius);
-        // ctx.arcTo(x + width, y, x + width - radius, y, radius);
-        // ctx.lineTo(x + radius, y);
-        // ctx.arcTo(x, y, x, y + radius, radius);
-        // ctx.lineJoin = "round";
-        // ctx.stroke();
-
     }
 
 
@@ -68,11 +52,6 @@ class Box {
         } else {
             ctx.fillStyle = 'black'
         }
-
-        //ctx.fillRect(this.x * image.w, this.y * image.h, image.w, image.h)
-
-
-
     }
 
 }
@@ -196,10 +175,10 @@ const arrBox = [
     new Box(5, 4, 'wall'),
     new Box(5, 5, 'apple'),
     new Box(5, 6, 'wall'),
-    new Box(5, 7, 'ghost'),
-    new Box(5, 8, 'ghost'),
-    new Box(5, 9, 'ghost'),
-    new Box(5, 10, 'ghost'),
+    new Box(5, 7, 'wallGhost'),
+    new Box(5, 8, 'wallGhost'),
+    new Box(5, 9, 'wallGhost'),
+    new Box(5, 10, 'wallGhost'),
     new Box(5, 11, 'wall'),
     new Box(5, 12, 'apple'),
     new Box(5, 13, 'wall'),
